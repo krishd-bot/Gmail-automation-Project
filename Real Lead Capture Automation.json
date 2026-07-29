@@ -1,0 +1,218 @@
+{
+  "name": "Real Lead Capture Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Lead Capture Form",
+        "formDescription": "Please fill your details.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "company"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6d201fe2-9ba2-4066-822d-94a4b1e9906c",
+      "name": "On form submission",
+      "webhookId": "658ed00b-df6a-4ac8-a4ae-b72a8531844f"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "27af8b4d-4a71-4d93-bb75-a6e1b237d9f8",
+              "leftValue": "={{$json.Email}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "f472a4b2-04d8-4e1c-81ee-89c50d99e688",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1U7pzI2DblpIIvXnIw6xL5zH8GA4oTMxKxmXi2avbRcM",
+          "mode": "list",
+          "cachedResultName": "n8n tool",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U7pzI2DblpIIvXnIw6xL5zH8GA4oTMxKxmXi2avbRcM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U7pzI2DblpIIvXnIw6xL5zH8GA4oTMxKxmXi2avbRcM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{$json.name}}",
+            "email": "={{$json.Email}}",
+            "company": "={{$json.company}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        -96
+      ],
+      "id": "c5782c0e-d11f-421c-b637-c627b55cac3d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "JTB55sYpa1hskPzc",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "Thank you for contacting us! ",
+        "message": "=<h2>Hello {{$json.name}},</h2>  <p>Thank you for submitting the form.</p>  <p>We have received your details successfully.</p>  <p>Our team will contact you soon.</p>  <br>  <p>Regards,<br> Deepak Pandey</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        16
+      ],
+      "id": "b66f0d99-04ae-482d-b44a-378559e5d34e",
+      "name": "Send a message",
+      "webhookId": "50d08e3a-33fa-4444-8f23-f08730f2a2ae",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jwWAusA0Zu02pELc",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "a7c91a15-4e38-4ce4-8779-90cbed52e47c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3823aa1bc7d299f16899c5a20fdba70cfa0bb70b5ea552ffae299c1fca530eb4"
+  },
+  "nodeGroups": [],
+  "id": "QKcQcuDM73zKBNeH",
+  "tags": []
+}
